@@ -1,6 +1,6 @@
 [package]
 org = "thenujan"
-name = "idcheck"
+name = "id_check"
 version = "0.1.0"
 distribution = "2201.8.4"
 
