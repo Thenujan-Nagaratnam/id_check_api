@@ -31,17 +31,17 @@ type User record {
 
 //mysql
 
-configurable string database = "GramaUsers";
-configurable string username = "avnadmin";
-configurable string host = "mysql-ffb6f33b-fdfb-491b-9aaa-8f6bb5d666dd-gramause3466168786-c.a.aivencloud.com";
-configurable int port = 14194;
-configurable string password = "AVNS_cpMUvXO1gSRD0kG8din";
+// configurable string database = "GramaUsers";
+// configurable string username = "avnadmin";
+// configurable string host = "mysql-ffb6f33b-fdfb-491b-9aaa-8f6bb5d666dd-gramause3466168786-c.a.aivencloud.com";
+// configurable int port = 14194;
+// configurable string password = "AVNS_cpMUvXO1gSRD0kG8din";
 
-// configurable string database = ?;
-// configurable string username = ?;
-// configurable string host = ?;
-// configurable int port = ?;
-// configurable string password = ?;
+configurable string database = ?;
+configurable string username = ?;
+configurable string host = ?;
+configurable int port = ?;
+configurable string password = ?;
 
 final mysql:Client dbClient = check new (user = username, password = password, host = host, port = port, database = database);
 
