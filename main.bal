@@ -1,79 +1,110 @@
-// import ballerinax/mysql.driver as _;
 import ballerina/http;
+import ballerina/io;
+import ballerina/log;
+import ballerina/sql;
+import ballerinax/postgresql;
+import ballerinax/postgresql.driver as _;
 
-// import ballerina/io;
-// import ballerina/log;
-// import ballerina/sql;
-// import ballerinax/mysql;
+type isValid record {
+    boolean valid;
+    string nic;
+};
 
-service / on new http:Listener(9090) {
+type User record {
+    @sql:Column {name: "id"}
+    string nic;
+    @sql:Column {name: "name"}
+    string name;
+    @sql:Column {name: "address"}
+    string address;
+    @sql:Column {name: "phone_no"}
+    string phone_no;
+};
 
-    isolated resource function get checkNic/[string nic]() returns boolean|error? {
+configurable string database = "GramaUsers";
 
-        if nic.length() == 10 {
-            return true;
-        } else {
-            return false;
-        }
+configurable string username = "avnadmin";
 
-    }
-}
+configurable string host = "pg-7902e7c7-f73b-401f-a1db-07c524deb30a-gramadb1489369037-chore.a.aivencloud.com";
 
-// // import ballerinax/mysql.driver as _;
-// import ballerina/http;
-// import ballerina/io;
-// import ballerina/log;
-// import ballerina/sql;
-// import ballerinax/mysql;
+configurable int port = 25416;
 
-// type isValid record {
-//     boolean valid;
-//     string nic;
-// };
+configurable string password = "AVNS_lqxqkt40klzjrbSwnDJ";
 
-// type Person record {
-//     string nic;
-//     @sql:Column {name: "firstname"}
-//     string firstName;
-//     @sql:Column {name: "lastname"}
-//     string lastName;
-
-// };
-
-// configurable string database = "idcheck";
-
-// configurable string username = "thenujan";
-
-// configurable string host = "localhost";
-
-// configurable int port = 3306;
-
-// configurable string password = "password";
+final postgresql:Client dbClient = check new (username = username, password = password, host = host, port = port, database = database);
 
 // final mysql:Client mysqlEp = check new (host = host, user = username, database = database, port = port, password = password);
 
-// service / on new http:Listener(9090) {
+service / on new http:Listener(25416) {
 
-//     isolated resource function get checkNic/[string nic]() returns isValid|error? {
+    isolated resource function get checkNic/[string nic]() returns isValid|error? {
 
-//         Person|error queryRowResponse = mysqlEp->queryRow(`select * from nic_details where nic=${nic.trim()}`);
-//         io:println(queryRowResponse);
+        sql:ParameterizedQuery query = `select * from "user" where id=${nic.trim()};`;
 
-//         if queryRowResponse is error {
-//             isValid result = {
-//                 valid: false,
-//                 nic: nic
-//             };
-//             log:printInfo("Entered NIC is Invalid: ");
-//             return result;
-//         } else {
-//             isValid result = {
-//                 valid: true,
-//                 nic: nic
-//             };
-//             log:printInfo(result.toBalString());
-//             return result;
-//         }
+        User|error queryRowResponse = check dbClient->queryRow(query);
+        io:println(queryRowResponse);
 
-//     }
-// }
+        if queryRowResponse is error {
+            isValid result = {
+                valid: false,
+                nic: nic
+            };
+            log:printInfo("Entered NIC is Invalid: ");
+            return result;
+        } else {
+            string id = queryRowResponse.nic;
+
+            if id.length() == 10 {
+
+                string strID = id.substring(0, 10);
+
+                int|error intValue = int:fromString(strID);
+
+                if (intValue is int) && (id.substring(10, 11) == "V" || id.substring(10, 11) == "v") {
+                    isValid result = {
+                        valid: true,
+                        nic: nic
+                    };
+                    log:printInfo(result.toBalString());
+                    return result;
+                } else {
+                    isValid result = {
+                        valid: false,
+                        nic: nic
+                    };
+                    log:printInfo("Entered NIC is Invalid: ");
+                    return result;
+                }
+            } else if id.length() == 12 {
+
+                int|error intValue = int:fromString(id);
+
+                if (intValue is int) {
+                    isValid result = {
+                        valid: true,
+                        nic: nic
+                    };
+                    log:printInfo(result.toBalString());
+                    return result;
+                } else {
+                    isValid result = {
+                        valid: false,
+                        nic: nic
+                    };
+                    log:printInfo("Entered NIC is Invalid: ");
+                    return result;
+                }
+            }
+            else {
+                isValid result = {
+                    valid: false,
+                    nic: nic
+                };
+                log:printInfo("Entered NIC is Invalid: ");
+                return result;
+            }
+
+        }
+    }
+}
+
