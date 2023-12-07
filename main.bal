@@ -85,7 +85,7 @@ service / on new http:Listener(25416) {
                 valid: false,
                 nic: nic
             };
-            log:printInfo("Entered NIC is Invalid: ");
+            log:printInfo("Entered NIC  is Invalid: ");
             return result;
         } else {
             isValid result = {
