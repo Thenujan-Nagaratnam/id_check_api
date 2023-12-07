@@ -302,7 +302,7 @@ modules = [
 
 [[package]]
 org = "ballerinax"
-name = "mysql"
+name = "postgresql"
 version = "1.11.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
@@ -312,15 +312,15 @@ dependencies = [
 	{org = "ballerina", name = "time"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "mysql", moduleName = "mysql"}
+	{org = "ballerinax", packageName = "postgresql", moduleName = "postgresql"}
 ]
 
 [[package]]
 org = "ballerinax"
-name = "mysql.driver"
-version = "1.6.0"
+name = "postgresql.driver"
+version = "1.5.0"
 modules = [
-	{org = "ballerinax", packageName = "mysql.driver", moduleName = "mysql.driver"}
+	{org = "ballerinax", packageName = "postgresql.driver", moduleName = "postgresql.driver"}
 ]
 
 [[package]]
@@ -333,8 +333,8 @@ dependencies = [
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "sql"},
 	{org = "ballerinai", name = "observe"},
-	{org = "ballerinax", name = "mysql"},
-	{org = "ballerinax", name = "mysql.driver"}
+	{org = "ballerinax", name = "postgresql"},
+	{org = "ballerinax", name = "postgresql.driver"}
 ]
 modules = [
 	{org = "thenujan", packageName = "id_check", moduleName = "id_check"}

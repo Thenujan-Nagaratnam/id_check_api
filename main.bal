@@ -2,8 +2,8 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/log;
 import ballerina/sql;
-import ballerinax/mysql;
-import ballerinax/mysql.driver as _;
+import ballerinax/postgresql;
+import ballerinax/postgresql.driver as _;
 
 type isValid record {
     boolean valid;
@@ -37,69 +37,32 @@ type User record {
 // configurable int port = 14194;
 // configurable string password = "AVNS_cpMUvXO1gSRD0kG8din";
 
-configurable string database = ?;
-configurable string username = ?;
-configurable string host = ?;
-configurable int port = ?;
-configurable string password = ?;
+type DatabaseConfig record {
+    string database;
+    string username;
+    string host;
+    int port;
+    string password;
+};
 
-final mysql:Client dbClient = check new (user = username, password = password, host = host, port = port, database = database);
+configurable DatabaseConfig databaseConfig = ?;
+
+// configurable string database = ?;
+// configurable string username = ?;
+// configurable string host = ?;
+// configurable int port = ?;
+// configurable string password = ?;
+
+final postgresql:Client dbClient = check new (host = databaseConfig.host, database = databaseConfig.database, username = databaseConfig.username,
+    password = databaseConfig.password, port = databaseConfig.port
+);
 
 type NicCheckRequest record {
     string nic;
 };
 
 service / on new http:Listener(14194) {
-    // isolated resource function get checkNic/[string nic]() returns isValid|error? {
-    //     // string id = nic.trim();
-    //     // if id.length() == 10 {
-    //     //     string strID = id.substring(0, 10);
-    //     //     int|error intValue = int:fromString(strID);
-    //     //     if !((intValue is int) && (id.substring(10, 11) == "V" || id.substring(10, 11) == "v")) {
-    //     //         isValid result = {
-    //     //                 valid: false,
-    //     //                 nic: nic
-    //     //             };
-    //     //         log:printInfo("Entered NIC is Invalid: ");
-    //     //         return result;
-    //     //     }
-    //     // } else if id.length() == 12 {
-    //     //     int|error intValue = int:fromString(id);
-    //     //     if !(intValue is int) {
-    //     //         isValid result = {
-    //     //                 valid: false,
-    //     //                 nic: nic
-    //     //             };
-    //     //         log:printInfo("Entered NIC is Invalid: ");
-    //     //         return result;
-    //     //     }
-    //     // }
-    //     // else {
-    //     //     isValid result = {
-    //     //             valid: false,
-    //     //             nic: nic
-    //     //         };
-    //     //     log:printInfo("Entered NIC is Invalid: ");
-    //     //     return result;
-    //     // }
-    //     sql:ParameterizedQuery query = `select * from "user" where id=${nic.trim()};`;
-    //     User|error queryRowResponse = dbClient->queryRow(query);
-    //     io:println(queryRowResponse);
-    //     if queryRowResponse is error {
-    //         isValid result = {
-    //             valid: false,
-    //             nic: nic
-    //         };
-    //         log:printInfo("Entered NIC  is Invalid: ");
-    //         return result;
-    //     } else {
-    //         isValid result = {
-    //                     valid: true,
-    //                     nic: nic
-    //                 };
-    //         return result;
-    //     }
-    // }
+
     resource function post nicCheck(@http:Payload NicCheckRequest payload) returns isValid|error? {
         isValid isValidNIC = checkNic(payload.nic);
         return isValidNIC;
@@ -107,7 +70,7 @@ service / on new http:Listener(14194) {
 }
 
 function checkNic(string nic) returns isValid {
-    sql:ParameterizedQuery query = `select * from user where id=${nic.trim()};`;
+    sql:ParameterizedQuery query = `select * from "user" where id=${nic.trim()};`;
     User|error queryRowResponse = dbClient->queryRow(query);
     io:println(queryRowResponse);
     if queryRowResponse is error {
