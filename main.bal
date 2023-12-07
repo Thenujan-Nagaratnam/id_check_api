@@ -125,4 +125,3 @@ function checkNic(string nic) returns isValid {
         return result;
     }
 }
-
