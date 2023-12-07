@@ -61,7 +61,7 @@ type NicCheckRequest record {
     string nic;
 };
 
-service / on new http:Listener(14194) {
+service / on new http:Listener(25416) {
 
     resource function post nicCheck(@http:Payload NicCheckRequest payload) returns isValid|error? {
         isValid isValidNIC = checkNic(payload.nic);
