@@ -33,15 +33,51 @@ configurable string password = "AVNS_lqxqkt40klzjrbSwnDJ";
 
 final postgresql:Client dbClient = check new (username = username, password = password, host = host, port = port, database = database);
 
-// final mysql:Client mysqlEp = check new (host = host, user = username, database = database, port = port, password = password);
-
 service / on new http:Listener(25416) {
 
     isolated resource function get checkNic/[string nic]() returns isValid|error? {
 
+        // string id = nic.trim();
+
+        // if id.length() == 10 {
+
+        //     string strID = id.substring(0, 10);
+
+        //     int|error intValue = int:fromString(strID);
+
+        //     if !((intValue is int) && (id.substring(10, 11) == "V" || id.substring(10, 11) == "v")) {
+        //         isValid result = {
+        //                 valid: false,
+        //                 nic: nic
+        //             };
+        //         log:printInfo("Entered NIC is Invalid: ");
+        //         return result;
+        //     }
+        // } else if id.length() == 12 {
+
+        //     int|error intValue = int:fromString(id);
+
+        //     if !(intValue is int) {
+        //         isValid result = {
+        //                 valid: false,
+        //                 nic: nic
+        //             };
+        //         log:printInfo("Entered NIC is Invalid: ");
+        //         return result;
+        //     }
+        // }
+        // else {
+        //     isValid result = {
+        //             valid: false,
+        //             nic: nic
+        //         };
+        //     log:printInfo("Entered NIC is Invalid: ");
+        //     return result;
+        // }
+
         sql:ParameterizedQuery query = `select * from "user" where id=${nic.trim()};`;
 
-        User|error queryRowResponse = check dbClient->queryRow(query);
+        User|error queryRowResponse = dbClient->queryRow(query);
         io:println(queryRowResponse);
 
         if queryRowResponse is error {
@@ -52,58 +88,11 @@ service / on new http:Listener(25416) {
             log:printInfo("Entered NIC is Invalid: ");
             return result;
         } else {
-            string id = queryRowResponse.nic;
-
-            if id.length() == 10 {
-
-                string strID = id.substring(0, 10);
-
-                int|error intValue = int:fromString(strID);
-
-                if (intValue is int) && (id.substring(10, 11) == "V" || id.substring(10, 11) == "v") {
-                    isValid result = {
+            isValid result = {
                         valid: true,
                         nic: nic
                     };
-                    log:printInfo(result.toBalString());
-                    return result;
-                } else {
-                    isValid result = {
-                        valid: false,
-                        nic: nic
-                    };
-                    log:printInfo("Entered NIC is Invalid: ");
-                    return result;
-                }
-            } else if id.length() == 12 {
-
-                int|error intValue = int:fromString(id);
-
-                if (intValue is int) {
-                    isValid result = {
-                        valid: true,
-                        nic: nic
-                    };
-                    log:printInfo(result.toBalString());
-                    return result;
-                } else {
-                    isValid result = {
-                        valid: false,
-                        nic: nic
-                    };
-                    log:printInfo("Entered NIC is Invalid: ");
-                    return result;
-                }
-            }
-            else {
-                isValid result = {
-                    valid: false,
-                    nic: nic
-                };
-                log:printInfo("Entered NIC is Invalid: ");
-                return result;
-            }
-
+            return result;
         }
     }
 }
