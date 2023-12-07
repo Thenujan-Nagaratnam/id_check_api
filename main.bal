@@ -21,17 +21,17 @@ type User record {
     string phone_no;
 };
 
-// configurable string database = "GramaUsers";
-// configurable string username = "avnadmin";
-// configurable string host = "pg-7902e7c7-f73b-401f-a1db-07c524deb30a-gramadb1489369037-chore.a.aivencloud.com";
-// configurable int port = 25416;
-// configurable string password = "AVNS_lqxqkt40klzjrbSwnDJ";
+configurable string database = "GramaUsers";
+configurable string username = "avnadmin";
+configurable string host = "pg-7902e7c7-f73b-401f-a1db-07c524deb30a-gramadb1489369037-chore.a.aivencloud.com";
+configurable int port = 25416;
+configurable string password = "AVNS_lqxqkt40klzjrbSwnDJ";
 
-configurable string database = ?;
-configurable string username = ?;
-configurable string host = ?;
-configurable int port = ?;
-configurable string password = ?;
+// configurable string database = ?;
+// configurable string username = ?;
+// configurable string host = ?;
+// configurable int port = ?;
+// configurable string password = ?;
 
 final postgresql:Client dbClient = check new (username = username, password = password, host = host, port = port, database = database);
 
