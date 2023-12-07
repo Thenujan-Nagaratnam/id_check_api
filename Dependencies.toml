@@ -33,7 +33,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "constraint"
-version = "1.4.0"
+version = "1.5.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -205,9 +205,6 @@ dependencies = [
 	{org = "ballerina", name = "lang.value"},
 	{org = "ballerina", name = "observe"}
 ]
-modules = [
-	{org = "ballerina", packageName = "log", moduleName = "log"}
-]
 
 [[package]]
 org = "ballerina"
@@ -325,18 +322,17 @@ modules = [
 
 [[package]]
 org = "thenujan"
-name = "id_check"
+name = "id_check_api"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "io"},
-	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "sql"},
 	{org = "ballerinai", name = "observe"},
 	{org = "ballerinax", name = "postgresql"},
 	{org = "ballerinax", name = "postgresql.driver"}
 ]
 modules = [
-	{org = "thenujan", packageName = "id_check", moduleName = "id_check"}
+	{org = "thenujan", packageName = "id_check_api", moduleName = "id_check_api"}
 ]
 
