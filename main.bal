@@ -23,8 +23,6 @@ configurable string username = ?;
 configurable string password = ?;
 configurable string database = ?;
 
-final postgresql:Client dbClient = check new (host = host, username = username, password = password, database = database, port = 25416);
-
 type NicCheckRequest record {
     string nic;
 };
@@ -32,14 +30,20 @@ type NicCheckRequest record {
 service / on new http:Listener(25416) {
 
     resource function post nicCheck(@http:Payload NicCheckRequest payload) returns isValid|error? {
-        isValid isValidNIC = checkNic(payload.nic);
+        isValid|error? isValidNIC = checkNic(payload.nic);
         return isValidNIC;
     }
 }
 
-function checkNic(string nic) returns isValid {
+function checkNic(string nicOld) returns isValid|error? {
+
+    postgresql:Client dbClient = check new (host = host, username = username, password = password, database = database, port = 25416);
+
+    string nic = string:toLowerAscii(nicOld);
     sql:ParameterizedQuery query = `select * from "user" where id=${nic.trim()};`;
     User|error queryRowResponse = dbClient->queryRow(query);
+    error? e = dbClient.close();
+    io:println(e);
     io:println(queryRowResponse);
     if queryRowResponse is error {
         isValid result = {
@@ -55,3 +59,4 @@ function checkNic(string nic) returns isValid {
         return result;
     }
 }
+
