@@ -13,7 +13,7 @@ type User record {|
 |};
 
 type isValid record {
-    boolean valid;
+    int valid;
     string nic;
 };
 
@@ -27,7 +27,7 @@ type NicCheckRequest record {
     string nic;
 };
 
-service / on new http:Listener(25416) {
+service / on new http:Listener(10636) {
 
     resource function post nicCheck(@http:Payload NicCheckRequest payload) returns isValid|error? {
         isValid|error? isValidNIC = checkNic(payload.nic);
@@ -35,25 +35,27 @@ service / on new http:Listener(25416) {
     }
 }
 
-function checkNic(string nicOld) returns isValid|error? {
+function checkNic(string nic) returns isValid|error? {
 
-    postgresql:Client dbClient = check new (host = host, username = username, password = password, database = database, port = 25416);
+    postgresql:Client dbClient = check new (host = host, username = username, password = password, database = database, port = 10636, connectionPool = {maxOpenConnections: 5});
 
-    string nic = string:toLowerAscii(nicOld);
-    sql:ParameterizedQuery query = `select * from "user" where id=${nic.trim()};`;
+    string nicLower = string:toLowerAscii(nic);
+    string nicUpper = string:toUpperAscii(nic);
+
+    sql:ParameterizedQuery query = `SELECT * FROM "user" WHERE id = ${nicLower.trim()} OR id = ${nicUpper.trim()};`;
     User|error queryRowResponse = dbClient->queryRow(query);
     error? e = dbClient.close();
     io:println(e);
     io:println(queryRowResponse);
     if queryRowResponse is error {
         isValid result = {
-                valid: false,
+                valid: 0,
                 nic: nic
             };
         return result;
     } else {
         isValid result = {
-                        valid: true,
+                        valid: 2,
                         nic: nic
                     };
         return result;
