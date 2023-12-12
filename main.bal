@@ -12,8 +12,8 @@ type User record {|
     string address;
 |};
 
-type isValid record {
-    int valid;
+type statusReq record {
+    int status;
     string nic;
 };
 
@@ -29,13 +29,13 @@ type NicCheckRequest record {
 
 service / on new http:Listener(10636) {
 
-    resource function post nicCheck(@http:Payload NicCheckRequest payload) returns isValid|error? {
-        isValid|error? isValidNIC = checkNic(payload.nic);
+    resource function post nicCheck(@http:Payload NicCheckRequest payload) returns statusReq|error? {
+        statusReq|error? isValidNIC = checkNic(payload.nic);
         return isValidNIC;
     }
 }
 
-function checkNic(string nic) returns isValid|error? {
+function checkNic(string nic) returns statusReq|error? {
 
     postgresql:Client dbClient = check new (host = host, username = username, password = password, database = database, port = 10636, connectionPool = {maxOpenConnections: 5});
 
@@ -48,14 +48,14 @@ function checkNic(string nic) returns isValid|error? {
     io:println(e);
     io:println(queryRowResponse);
     if queryRowResponse is error {
-        isValid result = {
-                valid: 0,
+        statusReq result = {
+                status: 0,
                 nic: nic
             };
         return result;
     } else {
-        isValid result = {
-                        valid: 2,
+        statusReq result = {
+                        status: 2,
                         nic: nic
                     };
         return result;
