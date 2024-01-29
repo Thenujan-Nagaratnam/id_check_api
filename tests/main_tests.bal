@@ -15,7 +15,7 @@ function beforeSuiteFunc() {
 
 @test:Config {}
 function testServiceWithInvalidNIC1() returns error? {
-    json payload = {"nic": "123456789"};
+    json payload = {"nic": "123456789", "name":"Alice"};
     http:Response response = check testClient->post("/nicCheck", payload);
     // io:println(response.statusCode);
     test:assertEquals(response.statusCode, 201);
@@ -23,10 +23,21 @@ function testServiceWithInvalidNIC1() returns error? {
     json expected = {"status": 0, "nic": "123456789"};
     test:assertEquals(errorPayload, expected);
 }
+ 
+@test:Config {}
+function testServiceWithInvalidName() returns error? {
+    json payload = {"nic": "123456789V", "name":"John"};
+    http:Response response = check testClient->post("/nicCheck", payload);
+    // io:println(response.statusCode);
+    test:assertEquals(response.statusCode, 201);
+    json errorPayload = check response.getJsonPayload();
+    json expected = {"status": 0, "nic": "123456789V"};
+    test:assertEquals(errorPayload, expected);
+}
 
 @test:Config {}
 function testServiceWithValidNIC1() returns error? {
-    json payload = {"nic": "123456789V"};
+    json payload = {"nic": "123456789V", "name":"Alice"};
     http:Response response = check testClient->post("/nicCheck", payload);
     // io:println(response.statusCode);
     test:assertEquals(response.statusCode, 201);
@@ -37,7 +48,7 @@ function testServiceWithValidNIC1() returns error? {
 
 @test:Config {}
 function testServiceWithValidNIC2() returns error? {
-    json payload = {"nic": "123456789v"};
+    json payload = {"nic": "123456789v", "name":"Alice"};
     http:Response response = check testClient->post("/nicCheck", payload);
     // io:println(response.statusCode);
     test:assertEquals(response.statusCode, 201);
@@ -48,7 +59,7 @@ function testServiceWithValidNIC2() returns error? {
 
 @test:Config {}
 function testServiceWithInalidNIC2() returns error? {
-    json payload = {"nic": ""};
+    json payload = {"nic": "", "name":"Alice"};
     http:Response response = check testClient->post("/nicCheck", payload);
     // io:println(response.statusCode);
     test:assertEquals(response.statusCode, 201);
